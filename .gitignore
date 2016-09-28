@@ -1,3 +1,5 @@
 *.sym
 *.sms
 dasm
+*.ips
+*.zip
