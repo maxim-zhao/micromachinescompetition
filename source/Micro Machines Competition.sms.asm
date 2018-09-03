@@ -74,22 +74,26 @@ banks 16
 .bank 0 slot 0
 .unbackground $a6d $a7e
 .orga $a6d
+.section "HUD sprite locaitons" force
 ;   laps   :    .    m    m    s    s    f    f
 .db $10, $21, $35, $10, $18, $24, $2c, $38, $40 ; X - kerned around punctuation TODO
 .db $08, $11, $11, $11, $11, $11, $11, $11, $11 ; Y
+.ends
 
 ; Replace HUD sprite index updates
 ; - RAM location of tile index data
 .define TileIndexes $df37
 ; - Initialisation
-.unbackground $3d1f $3d45
+.unbackground $3d1f $3d32
 .orga $3d1f
+.section "HUD initialisation" force
   ; We set the punctuation tiles, wait for the refresh to do digits
   ld a,Tile_colon
   ld (TileIndexes+1),a
   ld a,Tile_dot
   ld (TileIndexes+2),a
-  jp $3d46
+  jp $3d33 ; skip unused code
+.ends
 
 .enum $94
   Tile_5 db
@@ -114,6 +118,9 @@ banks 16
   Tile_4 db
 .ende
 
+; We ut this lookup in some unused space
+.unbackground $26 $37
+.section "Number to tile lookup" free
 NumbersToTiles:
 .db Tile_0
 .db Tile_1
@@ -125,11 +132,13 @@ NumbersToTiles:
 .db Tile_7
 .db Tile_8
 .db Tile_9
+.ends
 
 ; - Updates
 .bank 1 slot 1
 .unbackground $710a $7170
 .orga $710a
+.section "Per-frame HUD update" force
   ; Gets called every frame, should update TileIndexes
   ld a,($DE4F) ; RaceStartCounter
   cp $80
@@ -207,11 +216,14 @@ _overflowDigit:
   ; increment it
   inc a
   ret
-  
+.ends
+
 ; Replace sprite tiles
 .bank 12 slot 2
 .unbackground $30a68 $30c47
 .orga $8a68
+.section "Time trial HUD tiles" force
 .incbin "Time trial HUD.bin"
+.ends
 
 .endif
